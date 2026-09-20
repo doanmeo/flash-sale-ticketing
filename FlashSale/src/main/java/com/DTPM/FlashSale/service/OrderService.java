@@ -1,20 +1,20 @@
 package com.DTPM.FlashSale.service;
 
+import com.DTPM.FlashSale.dto.response.OrderResponse;
 import com.DTPM.FlashSale.entity.Order;
 import com.DTPM.FlashSale.entity.OrderItem;
+import com.DTPM.FlashSale.entity.TicketType;
 import com.DTPM.FlashSale.enums.OrderStatus;
-import com.DTPM.FlashSale.repository.OrderRepository;
-import com.DTPM.FlashSale.dto.response.OrderResponse;
 import com.DTPM.FlashSale.exception.AppException;
 import com.DTPM.FlashSale.exception.ErrorCode;
 import com.DTPM.FlashSale.infrastructure.RedisStockService;
-
+import com.DTPM.FlashSale.repository.OrderRepository;
+import com.DTPM.FlashSale.repository.TicketTypeRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Slf4j
@@ -23,6 +23,7 @@ import java.util.List;
 public class OrderService {
 
     private final OrderRepository orderRepository;
+    private final TicketTypeRepository ticketTypeRepository;
     private final RedisStockService redisStockService;
 
     /**
@@ -30,10 +31,9 @@ public class OrderService {
      */
     @Transactional
     public OrderResponse cancel(Long userId, Long orderId) {
-        Order order = orderRepository.findByIdAndUserId(orderId, userId)
+        Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new AppException(ErrorCode.ORDER_NOT_FOUND));
 
-        // Ownership đã qua findByIdAndUserId; vẫn có thể check rõ
         if (!order.getUser().getId().equals(userId)) {
             throw new AppException(ErrorCode.ORDER_ACCESS_DENIED);
         }
@@ -58,15 +58,16 @@ public class OrderService {
      */
     @Transactional
     public void expire(Long orderId) {
-        Order order = orderRepository.findById(orderId)
-                .orElse(null);
+        Order order = orderRepository.findById(orderId).orElse(null);
         if (order == null) {
             return;
         }
-        // Idempotent: đã EXPIRED/CANCELLED/PAID thì bỏ qua
+
+        // Idempotent: nếu không còn PENDING thì return
         if (order.getStatus() != OrderStatus.PENDING) {
             return;
         }
+
         order.expire(); // status = EXPIRED
         releaseStock(order);
         orderRepository.save(order);
@@ -74,18 +75,20 @@ public class OrderService {
     }
 
     /**
-     * Trả lại inventory Redis (+ đồng bộ DB availableQuantity nếu cần)
+     * Trả lại inventory Redis (+ đồng bộ DB availableQuantity)
      */
     private void releaseStock(Order order) {
         for (OrderItem item : order.getItems()) {
-            Long ticketTypeId = item.getTicketType().getId();
+            TicketType ticketType = item.getTicketType();
+            Long ticketTypeId = ticketType.getId();
             int qty = item.getQuantity();
+
             redisStockService.increase(ticketTypeId, qty);
 
             // Đồng bộ DB (đối soát)
-            var ticketType = item.getTicketType();
             int current = ticketType.getAvailableQuantity() == null ? 0 : ticketType.getAvailableQuantity();
             ticketType.setAvailableQuantity(current + qty);
+            ticketTypeRepository.save(ticketType);
         }
     }
 

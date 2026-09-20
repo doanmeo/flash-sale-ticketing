@@ -14,7 +14,7 @@ import java.util.List;
 
 /**
  * UC-09 nhánh 2: Auto-expire đơn PENDING quá expiresAt
- * Chạy mỗi 60 giây
+ * Chạy mỗi 60 giây (hoặc app.order.expire-scan-ms)
  */
 @Slf4j
 @Component
