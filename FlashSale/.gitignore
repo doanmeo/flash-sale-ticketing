@@ -1,0 +1,62 @@
+HELP.md
+target/
+.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+build/
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+### VS Code ###
+.vscode/
+
+### Others ###
+.env
+
+# General Build Artifacts
+bin/
+out/
+dist/
+
+# Log files
+*.log
+logs/
+
+# Sensitive Configuration Files (use with caution, application.yaml is often committed)
+*.properties
+# *.yml
+*.yaml
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*~
+*.tmp
+
+# Documentation and Markdown files
+*.md
+!README.md
