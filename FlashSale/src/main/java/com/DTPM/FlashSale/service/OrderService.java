@@ -8,14 +8,13 @@ import com.DTPM.FlashSale.enums.OrderStatus;
 import com.DTPM.FlashSale.exception.AppException;
 import com.DTPM.FlashSale.exception.ErrorCode;
 import com.DTPM.FlashSale.infrastructure.RedisStockService;
+import com.DTPM.FlashSale.mapper.OrderMapper;
 import com.DTPM.FlashSale.repository.OrderRepository;
 import com.DTPM.FlashSale.repository.TicketTypeRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @Slf4j
 @Service
@@ -25,6 +24,7 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final TicketTypeRepository ticketTypeRepository;
     private final RedisStockService redisStockService;
+    private final OrderMapper orderMapper;
 
     /**
      * UC-09 nhánh 1: User hủy đơn PENDING (còn trong thời gian hold)
@@ -50,7 +50,7 @@ public class OrderService {
         Order saved = orderRepository.save(order);
 
         log.info("Order {} cancelled by user {}", order.getOrderCode(), userId);
-        return toResponse(saved);
+        return orderMapper.toOrderResponse(saved);
     }
 
     /**
@@ -90,27 +90,5 @@ public class OrderService {
             ticketType.setAvailableQuantity(current + qty);
             ticketTypeRepository.save(ticketType);
         }
-    }
-
-    private OrderResponse toResponse(Order order) {
-        List<OrderResponse.OrderItemResponse> items = order.getItems().stream()
-                .map(i -> OrderResponse.OrderItemResponse.builder()
-                        .ticketTypeId(i.getTicketType().getId())
-                        .ticketTypeName(i.getTicketType().getName())
-                        .quantity(i.getQuantity())
-                        .unitPrice(i.getUnitPrice())
-                        .subtotal(i.calculateSubtotal())
-                        .build())
-                .toList();
-
-        return OrderResponse.builder()
-                .id(order.getId())
-                .orderCode(order.getOrderCode())
-                .status(order.getStatus())
-                .totalAmount(order.getTotalAmount())
-                .expiresAt(order.getExpiresAt())
-                .createdAt(order.getCreatedAt())
-                .items(items)
-                .build();
     }
 }

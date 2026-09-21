@@ -1,24 +1,22 @@
 package com.DTPM.FlashSale.service;
 
-import com.DTPM.FlashSale.entity.*;
-import com.DTPM.FlashSale.enums.OrderStatus;
-import com.DTPM.FlashSale.repository.OrderRepository;
-import com.DTPM.FlashSale.repository.TicketTypeRepository;
-import com.DTPM.FlashSale.repository.UserRepository;
 import com.DTPM.FlashSale.dto.request.CreateOrderRequest;
 import com.DTPM.FlashSale.dto.response.OrderResponse;
+import com.DTPM.FlashSale.entity.*;
+import com.DTPM.FlashSale.enums.OrderStatus;
 import com.DTPM.FlashSale.exception.AppException;
 import com.DTPM.FlashSale.exception.ErrorCode;
 import com.DTPM.FlashSale.infrastructure.RedisStockService;
-
+import com.DTPM.FlashSale.mapper.OrderMapper;
+import com.DTPM.FlashSale.repository.OrderRepository;
+import com.DTPM.FlashSale.repository.TicketTypeRepository;
+import com.DTPM.FlashSale.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -31,6 +29,7 @@ public class BookingService {
     private final OrderRepository orderRepository;
     private final UserRepository userRepository;
     private final RedisStockService redisStockService;
+    private final OrderMapper orderMapper;
 
     /**
      * UC-06: Đặt vé Flash Sale
@@ -93,7 +92,7 @@ public class BookingService {
             ticketType.setAvailableQuantity(Math.max(0, current - request.getQuantity()));
 
             Order saved = orderRepository.save(order);
-            return toResponse(saved);
+            return orderMapper.toOrderResponse(saved);
         } catch (RuntimeException ex) {
             // Nếu lỗi sau khi DECR → trả lại Redis
             redisStockService.increase(ticketType.getId(), request.getQuantity());
@@ -111,31 +110,8 @@ public class BookingService {
     }
 
     private String generateOrderCode() {
-        // Ví dụ: FS-20260919-A1B2C3
         String date = LocalDateTime.now().toLocalDate().toString().replace("-", "");
         String rand = UUID.randomUUID().toString().substring(0, 6).toUpperCase();
         return "FS-" + date + "-" + rand;
-    }
-
-    private OrderResponse toResponse(Order order) {
-        List<OrderResponse.OrderItemResponse> items = order.getItems().stream()
-                .map(i -> OrderResponse.OrderItemResponse.builder()
-                        .ticketTypeId(i.getTicketType().getId())
-                        .ticketTypeName(i.getTicketType().getName())
-                        .quantity(i.getQuantity())
-                        .unitPrice(i.getUnitPrice())
-                        .subtotal(i.calculateSubtotal())
-                        .build())
-                .toList();
-
-        return OrderResponse.builder()
-                .id(order.getId())
-                .orderCode(order.getOrderCode())
-                .status(order.getStatus())
-                .totalAmount(order.getTotalAmount())
-                .expiresAt(order.getExpiresAt())
-                .createdAt(order.getCreatedAt())
-                .items(items)
-                .build();
     }
 }

@@ -9,6 +9,7 @@ import com.DTPM.FlashSale.enums.OrderStatus;
 import com.DTPM.FlashSale.exception.AppException;
 import com.DTPM.FlashSale.exception.ErrorCode;
 import com.DTPM.FlashSale.infrastructure.RedisStockService;
+import com.DTPM.FlashSale.mapper.OrderMapper;
 import com.DTPM.FlashSale.repository.OrderRepository;
 import com.DTPM.FlashSale.repository.TicketTypeRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -40,11 +41,13 @@ class OrderServiceTest {
     @Mock
     private RedisStockService redisStockService;
 
+    @Mock
+    private OrderMapper orderMapper;
+
     @InjectMocks
     private OrderService orderService;
 
     private User user;
-    private User otherUser;
     private TicketType ticketType;
     private Order order;
     private OrderItem orderItem;
@@ -52,7 +55,6 @@ class OrderServiceTest {
     @BeforeEach
     void setUp() {
         user = User.builder().id(1L).email("user1@example.com").build();
-        otherUser = User.builder().id(2L).email("user2@example.com").build();
 
         ticketType = TicketType.builder()
                 .id(100L)
@@ -131,6 +133,13 @@ class OrderServiceTest {
     void cancel_Success() {
         when(orderRepository.findById(50L)).thenReturn(Optional.of(order));
         when(orderRepository.save(any(Order.class))).thenAnswer(i -> i.getArgument(0));
+
+        OrderResponse mockResponse = OrderResponse.builder()
+                .id(50L)
+                .orderCode("FS-TEST-001")
+                .status(OrderStatus.CANCELLED)
+                .build();
+        when(orderMapper.toOrderResponse(any(Order.class))).thenReturn(mockResponse);
 
         OrderResponse response = orderService.cancel(1L, 50L);
 
