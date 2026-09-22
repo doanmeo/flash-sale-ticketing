@@ -83,6 +83,18 @@ class OrderServiceTest {
     }
 
     @Test
+    @DisplayName("getOrderById: Thành công lấy thông tin đơn hàng khi là chủ đơn")
+    void getOrderById_Success_Owner() {
+        when(orderRepository.findById(50L)).thenReturn(Optional.of(order));
+        when(orderMapper.toOrderResponse(order)).thenReturn(OrderResponse.builder().id(50L).orderCode("FS-TEST-001").build());
+
+        OrderResponse response = orderService.getOrderById(1L, 50L);
+
+        assertNotNull(response);
+        assertEquals("FS-TEST-001", response.getOrderCode());
+    }
+
+    @Test
     @DisplayName("cancel: Thất bại khi không tìm thấy Order (ORDER_NOT_FOUND)")
     void cancel_OrderNotFound() {
         when(orderRepository.findById(999L)).thenReturn(Optional.empty());

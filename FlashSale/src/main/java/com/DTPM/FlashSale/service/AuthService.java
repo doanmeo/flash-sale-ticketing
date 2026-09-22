@@ -1,5 +1,6 @@
 package com.DTPM.FlashSale.service;
 
+import com.DTPM.FlashSale.dto.request.ChangePasswordRequest;
 import com.DTPM.FlashSale.dto.request.LoginRequest;
 import com.DTPM.FlashSale.dto.request.LogoutRequest;
 import com.DTPM.FlashSale.dto.request.RefreshTokenRequest;
@@ -110,6 +111,22 @@ public class AuthService {
             refreshTokenRepository.save(tokenEntity);
             log.info("Revoked refresh token for user id: {}", tokenEntity.getUser().getId());
         }
+    }
+
+    @Transactional
+    public void changePassword(Long userId, ChangePasswordRequest request) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+
+        if (!passwordEncoder.matches(request.getOldPassword(), user.getPasswordHash())) {
+            throw new AppException(ErrorCode.INVALID_CREDENTIALS);
+        }
+
+        user.setPasswordHash(passwordEncoder.encode(request.getNewPassword()));
+        userRepository.save(user);
+
+        refreshTokenRepository.revokeAllByUserId(userId);
+        log.info("Password changed successfully and all refresh tokens revoked for user id: {}", userId);
     }
 
     private AuthResponse createAuthResponse(User user) {

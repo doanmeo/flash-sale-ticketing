@@ -14,4 +14,7 @@ public interface EventRepository extends JpaRepository<Event, Long> {
     Page<Event> findByOrganizerIdAndDeletedAtIsNull(Long organizerId, Pageable pageable);
     Page<Event> findByNameContainingIgnoreCaseAndStatusAndDeletedAtIsNull(
             String keyword, EventStatus status, Pageable pageable);
+    Page<Event> findByDeletedAtIsNull(Pageable pageable);
+    Page<Event> findByNameContainingIgnoreCaseAndDeletedAtIsNull(String keyword, Pageable pageable);
 }
+
