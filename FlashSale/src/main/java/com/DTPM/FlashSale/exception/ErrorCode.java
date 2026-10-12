@@ -28,11 +28,15 @@ public enum ErrorCode {
     EVENT_NOT_PUBLISHED(1301, "Event is not available for booking", HttpStatus.BAD_REQUEST),
     EVENT_NOT_MODIFIABLE(1302, "Event cannot be modified in current status", HttpStatus.BAD_REQUEST),
     EVENT_ACCESS_DENIED(1303, "You do not own this event", HttpStatus.FORBIDDEN),
+    SESSION_NOT_FOUND(1310, "Show session not found", HttpStatus.NOT_FOUND),
 
-    // ===== TicketType 14xx =====
+    // ===== TicketType / Seat 14xx =====
     TICKET_TYPE_NOT_FOUND(1400, "Ticket type not found", HttpStatus.NOT_FOUND),
     TICKET_NOT_ON_SALE(1401, "Ticket is not on sale", HttpStatus.BAD_REQUEST),
     INVALID_TICKET_QUANTITY(1402, "Quantity is outside allowed min/max per order", HttpStatus.BAD_REQUEST),
+    SEAT_LOCKED(1403, "Seat is currently locked by another user", HttpStatus.CONFLICT),
+    SEAT_BOOKED(1404, "Seat is already booked", HttpStatus.CONFLICT),
+    SEAT_NOT_FOUND(1405, "Seat not found", HttpStatus.NOT_FOUND),
 
     // ===== Order / Flash Sale 15xx =====
     ORDER_NOT_FOUND(1500, "Order not found", HttpStatus.NOT_FOUND),
@@ -45,7 +49,11 @@ public enum ErrorCode {
 
     // ===== Payment 16xx =====
     PAYMENT_FAILED(1600, "Payment failed", HttpStatus.BAD_REQUEST),
-    PAYMENT_ALREADY_EXISTS(1601, "Payment already exists for this order", HttpStatus.CONFLICT);
+    PAYMENT_ALREADY_EXISTS(1601, "Payment already exists for this order", HttpStatus.CONFLICT),
+
+    // ===== Flash Sale Campaign 17xx =====
+    CAMPAIGN_INACTIVE(1700, "Flash sale campaign is not active", HttpStatus.BAD_REQUEST),
+    FLASH_SOLD_OUT(1701, "Flash sale campaign quota sold out", HttpStatus.CONFLICT);
 
     private final int code;
     private final String message;

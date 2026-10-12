@@ -1,8 +1,8 @@
 package com.DTPM.FlashSale.mapper;
 
 import com.DTPM.FlashSale.dto.response.OrderResponse;
-import com.DTPM.FlashSale.entity.Order;
-import com.DTPM.FlashSale.entity.OrderItem;
+import com.DTPM.FlashSale.domain.entity.Order;
+import com.DTPM.FlashSale.domain.entity.OrderItem;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 

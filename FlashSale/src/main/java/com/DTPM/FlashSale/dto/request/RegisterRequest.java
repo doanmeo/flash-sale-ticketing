@@ -1,6 +1,6 @@
 package com.DTPM.FlashSale.dto.request;
 
-import com.DTPM.FlashSale.enums.UserRole;
+import com.DTPM.FlashSale.domain.enums.UserRole;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;

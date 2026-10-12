@@ -1,8 +1,8 @@
 package com.DTPM.FlashSale.infrastructure;
 
-import com.DTPM.FlashSale.entity.Order;
-import com.DTPM.FlashSale.enums.OrderStatus;
-import com.DTPM.FlashSale.repository.OrderRepository;
+import com.DTPM.FlashSale.domain.entity.Order;
+import com.DTPM.FlashSale.domain.enums.OrderStatus;
+import com.DTPM.FlashSale.domain.repository.OrderRepository;
 import com.DTPM.FlashSale.service.OrderService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

@@ -1,6 +1,6 @@
 package com.DTPM.FlashSale.security;
 
-import com.DTPM.FlashSale.entity.User;
+import com.DTPM.FlashSale.domain.entity.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;

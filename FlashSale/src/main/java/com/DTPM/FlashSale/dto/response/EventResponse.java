@@ -1,6 +1,6 @@
 package com.DTPM.FlashSale.dto.response;
 
-import com.DTPM.FlashSale.enums.EventStatus;
+import com.DTPM.FlashSale.domain.enums.EventStatus;
 import lombok.*;
 
 import java.time.LocalDateTime;

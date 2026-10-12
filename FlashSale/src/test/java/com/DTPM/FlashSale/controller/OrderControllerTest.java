@@ -1,15 +1,16 @@
 package com.DTPM.FlashSale.controller;
 
 import com.DTPM.FlashSale.dto.response.OrderResponse;
-import com.DTPM.FlashSale.enums.OrderStatus;
-import com.DTPM.FlashSale.enums.UserRole;
-import com.DTPM.FlashSale.enums.UserStatus;
+import com.DTPM.FlashSale.domain.enums.OrderStatus;
+import com.DTPM.FlashSale.domain.enums.UserRole;
+import com.DTPM.FlashSale.domain.enums.UserStatus;
 import com.DTPM.FlashSale.exception.AppException;
 import com.DTPM.FlashSale.exception.ErrorCode;
 import com.DTPM.FlashSale.exception.GlobalExceptionHandler;
 import com.DTPM.FlashSale.security.UserPrincipal;
 import com.DTPM.FlashSale.service.BookingService;
 import com.DTPM.FlashSale.service.OrderService;
+import com.DTPM.FlashSale.service.PaymentService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -43,6 +44,9 @@ class OrderControllerTest {
 
     @Mock
     private OrderService orderService;
+
+    @Mock
+    private PaymentService paymentService;
 
     @InjectMocks
     private OrderController orderController;

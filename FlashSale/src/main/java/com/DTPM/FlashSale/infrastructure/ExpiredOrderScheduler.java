@@ -1,8 +1,8 @@
 package com.DTPM.FlashSale.infrastructure;
 
-import com.DTPM.FlashSale.entity.Order;
-import com.DTPM.FlashSale.enums.OrderStatus;
-import com.DTPM.FlashSale.repository.OrderRepository;
+import com.DTPM.FlashSale.domain.entity.Order;
+import com.DTPM.FlashSale.domain.enums.OrderStatus;
+import com.DTPM.FlashSale.domain.repository.OrderRepository;
 import com.DTPM.FlashSale.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,6 +23,8 @@ public class ExpiredOrderScheduler {
 
     private final OrderRepository orderRepository;
     private final OrderService orderService;
+    private final com.DTPM.FlashSale.domain.repository.SessionSeatRepository sessionSeatRepository;
+    private final RedisSeatLockService redisSeatLockService;
 
     @Scheduled(fixedDelayString = "${app.order.expire-scan-ms:60000}")
     public void processExpiredOrders() {
@@ -32,17 +34,29 @@ public class ExpiredOrderScheduler {
                 now
         );
 
-        if (expired.isEmpty()) {
-            return;
+        if (!expired.isEmpty()) {
+            log.info("Found {} expired PENDING orders", expired.size());
+            for (Order order : expired) {
+                try {
+                    orderService.expire(order.getId());
+                } catch (Exception e) {
+                    log.error("Failed to expire order id={}", order.getId(), e);
+                }
+            }
         }
 
-        log.info("Found {} expired PENDING orders", expired.size());
-        for (Order order : expired) {
-            try {
-                orderService.expire(order.getId());
-            } catch (Exception e) {
-                log.error("Failed to expire order id={}", order.getId(), e);
+        // Dọn dẹp an toàn các ghế bị lock mồ côi quá hạn
+        try {
+            List<com.DTPM.FlashSale.domain.entity.SessionSeat> orphanLocks = sessionSeatRepository.findExpiredLocks(now);
+            for (com.DTPM.FlashSale.domain.entity.SessionSeat ss : orphanLocks) {
+                ss.unlock();
+                sessionSeatRepository.save(ss);
+                if (ss.getShowSession() != null && ss.getSeat() != null) {
+                    redisSeatLockService.releaseSeatLock(ss.getShowSession().getId(), ss.getSeat().getId());
+                }
             }
+        } catch (Exception e) {
+            log.error("Failed to clean up orphan seat locks", e);
         }
     }
 }

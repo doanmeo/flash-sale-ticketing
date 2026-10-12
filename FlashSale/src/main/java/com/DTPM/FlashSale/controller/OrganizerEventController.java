@@ -9,7 +9,7 @@ import com.DTPM.FlashSale.dto.response.EventResponse;
 import com.DTPM.FlashSale.dto.response.OrderResponse;
 import com.DTPM.FlashSale.dto.response.OrganizerEventStatsResponse;
 import com.DTPM.FlashSale.dto.response.TicketTypeResponse;
-import com.DTPM.FlashSale.enums.OrderStatus;
+import com.DTPM.FlashSale.domain.enums.OrderStatus;
 import com.DTPM.FlashSale.security.SecurityUtils;
 import com.DTPM.FlashSale.service.EventService;
 import com.DTPM.FlashSale.service.OrderService;
@@ -27,7 +27,10 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
+
+@Tag(name = "Events")
 @RestController
 @RequestMapping("/api/organizer/events")
 @RequiredArgsConstructor
@@ -38,6 +41,7 @@ public class OrganizerEventController {
     private final TicketTypeService ticketTypeService;
     private final OrderService orderService;
     private final StatsService statsService;
+    private final com.DTPM.FlashSale.service.ShowSessionService showSessionService;
 
     @GetMapping
     public ResponseEntity<ApiResponse<Page<EventResponse>>> getMyEvents(
@@ -132,6 +136,22 @@ public class OrganizerEventController {
         Long organizerId = SecurityUtils.getCurrentUserId();
         OrganizerEventStatsResponse stats = statsService.getOrganizerEventStats(organizerId, eventId);
         return ResponseEntity.ok(ApiResponse.success(stats));
+    }
+
+    @PostMapping("/{eventId}/sessions")
+    public ResponseEntity<ApiResponse<com.DTPM.FlashSale.dto.response.ShowSessionResponse>> createSession(
+            @PathVariable Long eventId,
+            @Valid @RequestBody com.DTPM.FlashSale.dto.request.CreateShowSessionRequest request) {
+        Long organizerId = SecurityUtils.getCurrentUserId();
+        com.DTPM.FlashSale.dto.response.ShowSessionResponse response = showSessionService.createSession(organizerId, eventId, request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success(response));
+    }
+
+    @GetMapping("/{eventId}/sessions")
+    public ResponseEntity<ApiResponse<java.util.List<com.DTPM.FlashSale.dto.response.ShowSessionResponse>>> getSessions(
+            @PathVariable Long eventId) {
+        java.util.List<com.DTPM.FlashSale.dto.response.ShowSessionResponse> response = showSessionService.getSessionsByEvent(eventId);
+        return ResponseEntity.ok(ApiResponse.success(response));
     }
 }
 

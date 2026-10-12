@@ -1,9 +1,9 @@
 package com.DTPM.FlashSale.service;
 
-import com.DTPM.FlashSale.entity.AuditLog;
-import com.DTPM.FlashSale.entity.User;
-import com.DTPM.FlashSale.repository.AuditLogRepository;
-import com.DTPM.FlashSale.repository.UserRepository;
+import com.DTPM.FlashSale.domain.entity.AuditLog;
+import com.DTPM.FlashSale.domain.entity.User;
+import com.DTPM.FlashSale.domain.repository.AuditLogRepository;
+import com.DTPM.FlashSale.domain.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

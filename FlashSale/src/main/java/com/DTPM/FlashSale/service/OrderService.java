@@ -1,21 +1,21 @@
 package com.DTPM.FlashSale.service;
 
 import com.DTPM.FlashSale.dto.response.OrderResponse;
-import com.DTPM.FlashSale.entity.Event;
-import com.DTPM.FlashSale.entity.Order;
-import com.DTPM.FlashSale.entity.OrderItem;
-import com.DTPM.FlashSale.entity.TicketType;
-import com.DTPM.FlashSale.entity.User;
-import com.DTPM.FlashSale.enums.OrderStatus;
-import com.DTPM.FlashSale.enums.UserRole;
+import com.DTPM.FlashSale.domain.entity.Event;
+import com.DTPM.FlashSale.domain.entity.Order;
+import com.DTPM.FlashSale.domain.entity.OrderItem;
+import com.DTPM.FlashSale.domain.entity.TicketType;
+import com.DTPM.FlashSale.domain.entity.User;
+import com.DTPM.FlashSale.domain.enums.OrderStatus;
+import com.DTPM.FlashSale.domain.enums.UserRole;
 import com.DTPM.FlashSale.exception.AppException;
 import com.DTPM.FlashSale.exception.ErrorCode;
 import com.DTPM.FlashSale.infrastructure.RedisStockService;
 import com.DTPM.FlashSale.mapper.OrderMapper;
-import com.DTPM.FlashSale.repository.EventRepository;
-import com.DTPM.FlashSale.repository.OrderRepository;
-import com.DTPM.FlashSale.repository.TicketTypeRepository;
-import com.DTPM.FlashSale.repository.UserRepository;
+import com.DTPM.FlashSale.domain.repository.EventRepository;
+import com.DTPM.FlashSale.domain.repository.OrderRepository;
+import com.DTPM.FlashSale.domain.repository.TicketTypeRepository;
+import com.DTPM.FlashSale.domain.repository.UserRepository;
 import com.DTPM.FlashSale.security.SecurityUtils;
 import com.DTPM.FlashSale.security.UserPrincipal;
 import lombok.RequiredArgsConstructor;
@@ -39,6 +39,8 @@ public class OrderService {
     private final EventRepository eventRepository;
     private final UserRepository userRepository;
     private final RedisStockService redisStockService;
+    private final com.DTPM.FlashSale.infrastructure.RedisSeatLockService redisSeatLockService;
+    private final com.DTPM.FlashSale.domain.repository.SessionSeatRepository sessionSeatRepository;
     private final OrderMapper orderMapper;
 
     /**
@@ -214,20 +216,30 @@ public class OrderService {
     }
 
     /**
-     * Trả lại inventory Redis (+ đồng bộ DB availableQuantity)
+     * Trả lại inventory Redis (+ đồng bộ DB availableQuantity) & giải phóng ghế ngồi
      */
     private void releaseStock(Order order) {
-        for (OrderItem item : order.getItems()) {
-            TicketType ticketType = item.getTicketType();
-            Long ticketTypeId = ticketType.getId();
-            int qty = item.getQuantity();
+        if (order.getItems() == null) return;
+        for (com.DTPM.FlashSale.domain.entity.OrderItem item : order.getItems()) {
+            if (item.getLineType() == com.DTPM.FlashSale.domain.enums.LineItemType.SEATED && item.getSessionSeat() != null) {
+                com.DTPM.FlashSale.domain.entity.SessionSeat ss = item.getSessionSeat();
+                ss.unlock();
+                sessionSeatRepository.save(ss);
+                if (ss.getShowSession() != null && ss.getSeat() != null) {
+                    redisSeatLockService.releaseSeatLock(ss.getShowSession().getId(), ss.getSeat().getId());
+                }
+            } else if (item.getTicketType() != null) {
+                TicketType ticketType = item.getTicketType();
+                Long ticketTypeId = ticketType.getId();
+                int qty = item.getQuantity() != null ? item.getQuantity() : 1;
 
-            redisStockService.increase(ticketTypeId, qty);
+                redisStockService.increase(ticketTypeId, qty);
 
-            // Đồng bộ DB (đối soát)
-            int current = ticketType.getAvailableQuantity() == null ? 0 : ticketType.getAvailableQuantity();
-            ticketType.setAvailableQuantity(current + qty);
-            ticketTypeRepository.save(ticketType);
+                // Đồng bộ DB (đối soát)
+                int current = ticketType.getAvailableQuantity() == null ? 0 : ticketType.getAvailableQuantity();
+                ticketType.setAvailableQuantity(current + qty);
+                ticketTypeRepository.save(ticketType);
+            }
         }
     }
 }

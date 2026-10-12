@@ -1,0 +1,20 @@
+package com.DTPM.FlashSale.domain.repository;
+
+import com.DTPM.FlashSale.domain.entity.Event;
+import com.DTPM.FlashSale.domain.enums.EventStatus;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import java.util.Optional;
+
+public interface EventRepository extends JpaRepository<Event, Long> {
+    Optional<Event> findByIdAndDeletedAtIsNull(Long id);
+    Page<Event> findByStatusAndDeletedAtIsNull(EventStatus status, Pageable pageable);
+    Page<Event> findByOrganizerIdAndDeletedAtIsNull(Long organizerId, Pageable pageable);
+    Page<Event> findByNameContainingIgnoreCaseAndStatusAndDeletedAtIsNull(
+            String keyword, EventStatus status, Pageable pageable);
+    Page<Event> findByDeletedAtIsNull(Pageable pageable);
+    Page<Event> findByNameContainingIgnoreCaseAndDeletedAtIsNull(String keyword, Pageable pageable);
+}
+

@@ -1,8 +1,8 @@
 package com.DTPM.FlashSale.security;
 
-import com.DTPM.FlashSale.entity.User;
-import com.DTPM.FlashSale.enums.UserRole;
-import com.DTPM.FlashSale.enums.UserStatus;
+import com.DTPM.FlashSale.domain.entity.User;
+import com.DTPM.FlashSale.domain.enums.UserRole;
+import com.DTPM.FlashSale.domain.enums.UserStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

@@ -1,11 +1,11 @@
 package com.DTPM.FlashSale.service;
 
 import com.DTPM.FlashSale.dto.response.UserResponse;
-import com.DTPM.FlashSale.entity.User;
+import com.DTPM.FlashSale.domain.entity.User;
 import com.DTPM.FlashSale.exception.AppException;
 import com.DTPM.FlashSale.exception.ErrorCode;
 import com.DTPM.FlashSale.mapper.UserMapper;
-import com.DTPM.FlashSale.repository.UserRepository;
+import com.DTPM.FlashSale.domain.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;

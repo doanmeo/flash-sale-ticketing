@@ -3,7 +3,7 @@ package com.DTPM.FlashSale.mapper;
 import com.DTPM.FlashSale.dto.request.CreateEventRequest;
 import com.DTPM.FlashSale.dto.request.UpdateEventRequest;
 import com.DTPM.FlashSale.dto.response.EventResponse;
-import com.DTPM.FlashSale.entity.Event;
+import com.DTPM.FlashSale.domain.entity.Event;
 import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -14,7 +14,7 @@ import org.mapstruct.NullValuePropertyMappingStrategy;
 public interface EventMapper {
 
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "status", expression = "java(com.DTPM.FlashSale.enums.EventStatus.DRAFT)")
+    @Mapping(target = "status", expression = "java(com.DTPM.FlashSale.domain.enums.EventStatus.DRAFT)")
     @Mapping(target = "deletedAt", ignore = true)
     @Mapping(target = "organizer", ignore = true)
     @Mapping(target = "ticketTypes", ignore = true)

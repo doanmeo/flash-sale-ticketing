@@ -4,11 +4,13 @@ import com.DTPM.FlashSale.dto.request.CreateOrderRequest;
 import com.DTPM.FlashSale.dto.response.ApiResponse;
 import com.DTPM.FlashSale.dto.response.OrderResponse;
 import com.DTPM.FlashSale.dto.response.PaymentResponse;
-import com.DTPM.FlashSale.enums.OrderStatus;
+import com.DTPM.FlashSale.domain.enums.OrderStatus;
 import com.DTPM.FlashSale.security.SecurityUtils;
 import com.DTPM.FlashSale.service.BookingService;
 import com.DTPM.FlashSale.service.OrderService;
 import com.DTPM.FlashSale.service.PaymentService;
+
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -18,6 +20,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+
+@Tag(name = "Orders")
 @RestController
 @RequestMapping("/api/orders")
 @RequiredArgsConstructor
@@ -47,6 +51,20 @@ public class OrderController {
     public ResponseEntity<ApiResponse<OrderResponse>> createOrder(@Valid @RequestBody CreateOrderRequest request) {
         Long userId = SecurityUtils.getCurrentUserId();
         OrderResponse response = bookingService.createOrder(userId, request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success(response));
+    }
+
+    @PostMapping("/ga")
+    public ResponseEntity<ApiResponse<OrderResponse>> createOrderGa(@Valid @RequestBody CreateOrderRequest request) {
+        Long userId = SecurityUtils.getCurrentUserId();
+        OrderResponse response = bookingService.createOrder(userId, request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success(response));
+    }
+
+    @PostMapping("/seated")
+    public ResponseEntity<ApiResponse<OrderResponse>> createOrderSeated(@Valid @RequestBody com.DTPM.FlashSale.dto.request.CreateSeatedOrderRequest request) {
+        Long userId = SecurityUtils.getCurrentUserId();
+        OrderResponse response = bookingService.createOrderSeated(userId, request);
         return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success(response));
     }
 

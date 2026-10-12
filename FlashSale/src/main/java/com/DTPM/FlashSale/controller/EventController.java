@@ -13,7 +13,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
+@Tag(name = "Events")
 @RestController
 @RequestMapping("/api/events")
 @RequiredArgsConstructor
@@ -21,6 +23,7 @@ public class EventController {
 
     private final EventService eventService;
     private final TicketTypeService ticketTypeService;
+    private final com.DTPM.FlashSale.service.ShowSessionService showSessionService;
 
     @GetMapping
     public ResponseEntity<ApiResponse<Page<EventResponse>>> getPublishedEvents(
@@ -39,6 +42,12 @@ public class EventController {
     @GetMapping("/{id}/tickets")
     public ResponseEntity<ApiResponse<List<TicketTypeResponse>>> getEventTicketTypes(@PathVariable Long id) {
         List<TicketTypeResponse> response = ticketTypeService.getTicketTypesByEventId(id);
+        return ResponseEntity.ok(ApiResponse.success(response));
+    }
+
+    @GetMapping("/{id}/sessions")
+    public ResponseEntity<ApiResponse<List<com.DTPM.FlashSale.dto.response.ShowSessionResponse>>> getEventSessions(@PathVariable Long id) {
+        List<com.DTPM.FlashSale.dto.response.ShowSessionResponse> response = showSessionService.getSessionsByEvent(id);
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 }

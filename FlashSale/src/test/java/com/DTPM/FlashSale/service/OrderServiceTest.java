@@ -1,17 +1,17 @@
 package com.DTPM.FlashSale.service;
 
 import com.DTPM.FlashSale.dto.response.OrderResponse;
-import com.DTPM.FlashSale.entity.Order;
-import com.DTPM.FlashSale.entity.OrderItem;
-import com.DTPM.FlashSale.entity.TicketType;
-import com.DTPM.FlashSale.entity.User;
-import com.DTPM.FlashSale.enums.OrderStatus;
+import com.DTPM.FlashSale.domain.entity.Order;
+import com.DTPM.FlashSale.domain.entity.OrderItem;
+import com.DTPM.FlashSale.domain.entity.TicketType;
+import com.DTPM.FlashSale.domain.entity.User;
+import com.DTPM.FlashSale.domain.enums.OrderStatus;
 import com.DTPM.FlashSale.exception.AppException;
 import com.DTPM.FlashSale.exception.ErrorCode;
 import com.DTPM.FlashSale.infrastructure.RedisStockService;
 import com.DTPM.FlashSale.mapper.OrderMapper;
-import com.DTPM.FlashSale.repository.OrderRepository;
-import com.DTPM.FlashSale.repository.TicketTypeRepository;
+import com.DTPM.FlashSale.domain.repository.OrderRepository;
+import com.DTPM.FlashSale.domain.repository.TicketTypeRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -39,7 +39,19 @@ class OrderServiceTest {
     private TicketTypeRepository ticketTypeRepository;
 
     @Mock
+    private com.DTPM.FlashSale.domain.repository.EventRepository eventRepository;
+
+    @Mock
+    private com.DTPM.FlashSale.domain.repository.UserRepository userRepository;
+
+    @Mock
     private RedisStockService redisStockService;
+
+    @Mock
+    private com.DTPM.FlashSale.infrastructure.RedisSeatLockService redisSeatLockService;
+
+    @Mock
+    private com.DTPM.FlashSale.domain.repository.SessionSeatRepository sessionSeatRepository;
 
     @Mock
     private OrderMapper orderMapper;

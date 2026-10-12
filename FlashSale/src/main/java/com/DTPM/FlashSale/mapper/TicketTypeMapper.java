@@ -3,7 +3,7 @@ package com.DTPM.FlashSale.mapper;
 import com.DTPM.FlashSale.dto.request.CreateTicketTypeRequest;
 import com.DTPM.FlashSale.dto.request.UpdateTicketTypeRequest;
 import com.DTPM.FlashSale.dto.response.TicketTypeResponse;
-import com.DTPM.FlashSale.entity.TicketType;
+import com.DTPM.FlashSale.domain.entity.TicketType;
 import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

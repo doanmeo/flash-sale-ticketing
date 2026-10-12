@@ -1,9 +1,9 @@
 package com.DTPM.FlashSale.security;
 
-import com.DTPM.FlashSale.entity.User;
+import com.DTPM.FlashSale.domain.entity.User;
 import com.DTPM.FlashSale.exception.AppException;
 import com.DTPM.FlashSale.exception.ErrorCode;
-import com.DTPM.FlashSale.repository.UserRepository;
+import com.DTPM.FlashSale.domain.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

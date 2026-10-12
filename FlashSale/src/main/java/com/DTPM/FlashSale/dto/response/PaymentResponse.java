@@ -1,7 +1,7 @@
 package com.DTPM.FlashSale.dto.response;
 
-import com.DTPM.FlashSale.enums.OrderStatus;
-import com.DTPM.FlashSale.enums.PaymentStatus;
+import com.DTPM.FlashSale.domain.enums.OrderStatus;
+import com.DTPM.FlashSale.domain.enums.PaymentStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

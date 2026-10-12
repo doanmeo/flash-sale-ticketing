@@ -1,13 +1,13 @@
 package com.DTPM.FlashSale.service;
 
 import com.DTPM.FlashSale.dto.response.UserResponse;
-import com.DTPM.FlashSale.entity.User;
-import com.DTPM.FlashSale.enums.UserRole;
-import com.DTPM.FlashSale.enums.UserStatus;
+import com.DTPM.FlashSale.domain.entity.User;
+import com.DTPM.FlashSale.domain.enums.UserRole;
+import com.DTPM.FlashSale.domain.enums.UserStatus;
 import com.DTPM.FlashSale.exception.AppException;
 import com.DTPM.FlashSale.exception.ErrorCode;
 import com.DTPM.FlashSale.mapper.UserMapper;
-import com.DTPM.FlashSale.repository.UserRepository;
+import com.DTPM.FlashSale.domain.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

@@ -1,17 +1,17 @@
 package com.DTPM.FlashSale.service;
 
 import com.DTPM.FlashSale.dto.response.PaymentResponse;
-import com.DTPM.FlashSale.entity.Order;
-import com.DTPM.FlashSale.entity.Payment;
-import com.DTPM.FlashSale.entity.User;
-import com.DTPM.FlashSale.enums.OrderStatus;
-import com.DTPM.FlashSale.enums.PaymentStatus;
+import com.DTPM.FlashSale.domain.entity.Order;
+import com.DTPM.FlashSale.domain.entity.Payment;
+import com.DTPM.FlashSale.domain.entity.User;
+import com.DTPM.FlashSale.domain.enums.OrderStatus;
+import com.DTPM.FlashSale.domain.enums.PaymentStatus;
 import com.DTPM.FlashSale.exception.AppException;
 import com.DTPM.FlashSale.exception.ErrorCode;
 import com.DTPM.FlashSale.infrastructure.QrCodeService;
 import com.DTPM.FlashSale.mapper.PaymentMapper;
-import com.DTPM.FlashSale.repository.OrderRepository;
-import com.DTPM.FlashSale.repository.PaymentRepository;
+import com.DTPM.FlashSale.domain.repository.OrderRepository;
+import com.DTPM.FlashSale.domain.repository.PaymentRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -42,6 +42,15 @@ class PaymentServiceTest {
 
     @Mock
     private PaymentMapper paymentMapper;
+
+    @Mock
+    private TicketInstanceService ticketInstanceService;
+
+    @Mock
+    private com.DTPM.FlashSale.domain.repository.SessionSeatRepository sessionSeatRepository;
+
+    @Mock
+    private com.DTPM.FlashSale.infrastructure.RedisSeatLockService redisSeatLockService;
 
     @InjectMocks
     private PaymentService paymentService;
@@ -147,5 +156,6 @@ class PaymentServiceTest {
 
         verify(orderRepository, times(1)).save(pendingOrder);
         verify(paymentRepository, times(1)).save(any(Payment.class));
+        verify(ticketInstanceService, times(1)).issueTicketsForOrder(pendingOrder);
     }
 }
